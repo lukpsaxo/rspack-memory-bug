@@ -1,0 +1,26 @@
+diff --git a/crates/node_binding/scripts/build.mjs b/crates/node_binding/scripts/build.mjs
+index 4a331904..7d8f1264 100644
+--- a/crates/node_binding/scripts/build.mjs
++++ b/crates/node_binding/scripts/build.mjs
+@@ -82,7 +82,7 @@ async function build() {
+ 		if (process.env.RSPACK_TARGET_BROWSER) {
+ 			features.push("browser")
+ 		}
+-		if (!isReleaseProfile) {
++		if (!isReleaseProfile && !process.env.NO_PERFETTO) {
+ 			features.push("perfetto");
+ 		}
+ 		if (values.profile === "release-debug") {
+diff --git a/crates/rspack_allocative_derive/src/root.rs b/crates/rspack_allocative_derive/src/root.rs
+index 1bba1d4a..3cdb6538 100644
+--- a/crates/rspack_allocative_derive/src/root.rs
++++ b/crates/rspack_allocative_derive/src/root.rs
+@@ -32,7 +32,7 @@ fn global_root_impl(input: proc_macro2::TokenStream) -> syn::Result<proc_macro2:
+   Ok(quote_spanned! {item_static.span()=>
+       #item_static
+ 
+-      #[rspack_allocative::__macro_refs::ctor::ctor]
++      #[rspack_allocative::__macro_refs::ctor::ctor(unsafe, crate_path = rspack_allocative::__macro_refs::ctor)]
+       fn #register_name() {
+           rspack_allocative::register_root(&#name);
+       }
